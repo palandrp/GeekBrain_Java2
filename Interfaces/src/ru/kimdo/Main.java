@@ -1,7 +1,9 @@
-import animals.*;
-import obstances.Track;
-import obstances.Wall;
-import obstances.Water;
+package ru.kimdo;
+
+import ru.kimdo.animals.*;
+import ru.kimdo.obstances.Track;
+import ru.kimdo.obstances.Wall;
+import ru.kimdo.obstances.Water;
 
 /**
  * Write a description of class Main here.
@@ -25,14 +27,3 @@ public class Main {
         }
     }
 }
-package animals;
-package animals;
-package animals;
-package animals;
-package animals;
-package obstances;
-        import animals.*;
-package obstances;
-        import animals.*;
-package obstances;
-        import animals.*;

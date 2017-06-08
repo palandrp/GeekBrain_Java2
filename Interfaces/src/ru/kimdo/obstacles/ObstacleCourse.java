@@ -1,4 +1,4 @@
-package ru.kimdo;
+package ru.kimdo.obstacles;
 
 import ru.kimdo.animals.Animal;
 import ru.kimdo.obstacles.Obstacle;
@@ -13,17 +13,18 @@ import ru.kimdo.obstacles.Water;
 public class ObstacleCourse {
     private Obstacle[] obstacleCourse = new Obstacle[3];
 
-    ObstacleCourse(int length1, int length2, int height){
+    public ObstacleCourse(int length1, int length2, int height){
         obstacleCourse[0] = new CopperPipe(length1);
         obstacleCourse[1] = new Water(length2);
         obstacleCourse[2] = new Fire(height);
     }
 
-    boolean doIt(Animal animal){
+    public boolean doIt(Animal animal){
         for (Obstacle o:
                 obstacleCourse) {
-            if (o.doIt(animal))
-                ;
+            if (!o.doIt(animal))
+                return false;
         }
+        return true;
     }
 }

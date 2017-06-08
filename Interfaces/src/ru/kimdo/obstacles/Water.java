@@ -1,21 +1,20 @@
-package ru.kimdo.obstances;
+package ru.kimdo.obstacles;
 
 import ru.kimdo.animals.Animal;
 import ru.kimdo.animals.Swimable;
 
 /**
- * Write a description of class Water here.
- *
- * @author (your name)
- * @version (a version number or a date)
+ * @author GeekBrains
+ * @version 06.06.2017
  */
-public class Water {
+public class Water implements Obstacle {
     private int length;
 
     public Water(int length) {
         this.length = length;
     }
 
+    @Override
     public boolean doIt(Animal animal) {
         if (animal instanceof Swimable)
             return ((Swimable) animal).swim(length);

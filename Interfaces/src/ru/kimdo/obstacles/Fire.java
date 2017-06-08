@@ -1,21 +1,20 @@
-package ru.kimdo.obstances;
+package ru.kimdo.obstacles;
 
 import ru.kimdo.animals.Animal;
 import ru.kimdo.animals.Jumpable;
 
 /**
- * Write a description of class Wall here.
- *
- * @author (your name)
- * @version (a version number or a date)
+ * @author GeekBrains
+ * @version 06.06.2017
  */
-public class Wall {
+public class Fire implements Obstacle {
     private float height;
 
-    public Wall(float height) {
+    public Fire(float height) {
         this.height = height;
     }
 
+    @Override
     public boolean doIt(Animal animal) {
         if (animal instanceof Jumpable)
             return ((Jumpable) animal).jump(height);

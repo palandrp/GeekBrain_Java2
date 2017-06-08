@@ -1,10 +1,8 @@
 package ru.kimdo.animals;
 
 /**
- * Write a description of class Hippo here.
- *
- * @author (your name)
- * @version (a version number or a date)
+ * @author GeekBrains
+ * @version 06.06.2017
  */
 public class Hippo extends Animal implements Swimable {
     private int swim_limit;

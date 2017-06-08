@@ -1,10 +1,8 @@
 package ru.kimdo.animals;
 
 /**
- * Write a description of class Hen here.
- *
- * @author (your name)
- * @version (a version number or a date)
+ * @author GeekBrains
+ * @version 06.06.2017
  */
 public class Hen extends Animal implements Jumpable {
     private float jump_limit;

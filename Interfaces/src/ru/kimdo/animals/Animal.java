@@ -1,9 +1,7 @@
 package ru.kimdo.animals;
 /**
- * Abstract class Animal - write a description of the class here
- *
- * @author (your name here)
- * @version (version number or date here)
+ * @author GeekBrains
+ * @version 06.06.2017
  */
 public abstract class Animal {
     protected String name;

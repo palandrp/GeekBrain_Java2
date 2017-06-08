@@ -1,10 +1,8 @@
 package ru.kimdo.animals;
 
 /**
- * Write a description of interface Jumpable here.
- *
- * @author (your name)
- * @version (a version number or a date)
+ * @author GeekBrains
+ * @version 06.06.2017
  */
 public interface Jumpable {
     boolean jump(float height);

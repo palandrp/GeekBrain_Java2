@@ -4,8 +4,8 @@ import ru.kimdo.animals.*;
 import ru.kimdo.obstacles.ObstacleCourse;
 
 /**
- * @author GeekBrains
- * @version 06.06.2017
+ * @author Pavel Petrikovskiy
+ * @version 09.06.2017
  */
 public class Main {
 

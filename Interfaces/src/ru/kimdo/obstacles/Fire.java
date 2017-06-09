@@ -4,8 +4,8 @@ import ru.kimdo.animals.Animal;
 import ru.kimdo.animals.Jumpable;
 
 /**
- * @author GeekBrains
- * @version 06.06.2017
+ * @author Pavel Petrikovskiy
+ * @version 09.06.2017
  */
 public class Fire implements Obstacle {
     private float height;

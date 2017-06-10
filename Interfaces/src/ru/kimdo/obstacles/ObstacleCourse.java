@@ -1,10 +1,6 @@
 package ru.kimdo.obstacles;
 
 import ru.kimdo.animals.Animal;
-import ru.kimdo.obstacles.Obstacle;
-import ru.kimdo.obstacles.CopperPipe;
-import ru.kimdo.obstacles.Fire;
-import ru.kimdo.obstacles.Water;
 
 /**
  * @author Pavel Petrikovskiy

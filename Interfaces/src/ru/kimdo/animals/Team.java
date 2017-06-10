@@ -1,6 +1,5 @@
 package ru.kimdo.animals;
 
-import ru.kimdo.animals.Animal;
 import ru.kimdo.obstacles.ObstacleCourse;
 
 /**

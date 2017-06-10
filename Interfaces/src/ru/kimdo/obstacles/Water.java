@@ -10,7 +10,7 @@ import ru.kimdo.animals.Swimable;
 public class Water implements Obstacle {
     private int length;
 
-    public Water(int length) {
+    Water(int length) {
         this.length = length;
     }
 

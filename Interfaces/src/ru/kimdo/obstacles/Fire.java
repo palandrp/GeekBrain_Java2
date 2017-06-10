@@ -10,7 +10,7 @@ import ru.kimdo.animals.Jumpable;
 public class Fire implements Obstacle {
     private float height;
 
-    public Fire(float height) {
+    Fire(float height) {
         this.height = height;
     }
 

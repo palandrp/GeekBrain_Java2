@@ -3,8 +3,9 @@ package ru.kimdo;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * 1) Создать массив с набором слов (20-30 слов, должны встречаться повторяющиеся):
@@ -20,12 +21,11 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        new arrayFromText("Java 2. Методичка #3.docx");
+        new arrayFromText("Text.txt");
     }
 }
 
 class arrayFromText {
-    List<String> textList;
 
     arrayFromText(String FILE_NAME){
         String line;
@@ -40,10 +40,22 @@ class arrayFromText {
             System.out.println(e);
         }
         if (file.length() > 0) {
-            textArray = file.split(" |,|.|!|-|<|>|:|;|}|[|]");
-            //textList = new LinkedList<String>(textArray);
-            System.out.println(textArray.toString());
+            file = file.toLowerCase();
+            file = file.replaceAll("[,.»«—:]", "");
+            file = file.trim();
+            textArray = file.split("[ \n\r\t]");
+            countWords(textArray);
         }
     }
-    
+    private void countWords(String[] textArray){
+        Set<String> set = new TreeSet<>();
+        set.addAll(Arrays.asList(textArray));
+        for (String s: set) {
+            int count = 0;
+            for (String ss: textArray)
+                if (s.equals(ss)) count++;
+            System.out.printf("%s -> %d; ",s,count);
+        }
+        System.out.println();
+    }
 }

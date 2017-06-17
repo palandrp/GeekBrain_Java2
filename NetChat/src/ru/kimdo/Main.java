@@ -4,6 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * @author Pavel Petrikovskiy
@@ -13,6 +18,7 @@ import java.awt.event.ActionListener;
 public class Main extends JFrame implements ActionListener {
     private JTextArea dialogue;
     private JTextField message;
+    private PrintWriter pw;
 
     public static void main(String[] args) {
         new Main();
@@ -26,6 +32,24 @@ public class Main extends JFrame implements ActionListener {
         setTitle(TITLE_OF_PROGRAM);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setBounds(START_LOCATION, START_LOCATION, WINDOW_WIDTH, WINDOW_HEIGHT);
+        addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent e) {}
+            @Override
+            public void windowClosing(WindowEvent e) {
+                pw.close();
+            }
+            @Override
+            public void windowClosed(WindowEvent e) {}
+            @Override
+            public void windowIconified(WindowEvent e) {}
+            @Override
+            public void windowDeiconified(WindowEvent e) {}
+            @Override
+            public void windowActivated(WindowEvent e) {}
+            @Override
+            public void windowDeactivated(WindowEvent e) {}
+        });
         dialogue = new JTextArea();
         dialogue.setEditable(true);
         JScrollPane scrollBar = new JScrollPane(dialogue);
@@ -40,12 +64,20 @@ public class Main extends JFrame implements ActionListener {
         add(BorderLayout.CENTER, scrollBar);
         add(BorderLayout.SOUTH, bp);
         setVisible(true);
+        try {
+            pw = new PrintWriter(new FileWriter("log.txt"));
+        } catch (IOException e) {
+            dialogue.append("SYSTEM: Не удалось создать/открыть лог-файл!");
+        }
     }
     @Override
     public void actionPerformed(ActionEvent e) {
         if (message.getText().trim().length() > 0) {
             dialogue.append(message.getText() + "\n");
             dialogue.append("Тестовый запуск!\n");
+            pw.printf("%s\n",message.getText());
+            pw.print("Тестовый запуск!\n");
+            pw.flush();
         }
         message.setText("");
         message.requestFocusInWindow();

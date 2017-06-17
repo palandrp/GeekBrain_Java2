@@ -52,13 +52,14 @@ class arrayFromText {
     private void countWords(String[] textArray){
         Set<String> set = new TreeSet<>();
         set.addAll(Arrays.asList(textArray));
+        System.out.println("Список слов, из которых состоит текст:");
+        System.out.println("(сразу с подсчетом вхождений слова)");
         for (String s: set) {
             int count = 0;
             for (String ss: textArray)
                 if (s.equals(ss)) count++;
-            System.out.printf("%s -> %d; ",s,count);
+            System.out.printf("%s:%d; ",s,count);
         }
         System.out.println();
-        System.out.println(set);
     }
 }

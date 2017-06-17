@@ -41,9 +41,11 @@ class arrayFromText {
         }
         if (file.length() > 0) {
             file = file.toLowerCase();
+            file = file.replaceAll("\\p{Cntrl}", " ");
             file = file.replaceAll("[,.»«—:]", "");
+            file = file.replaceAll("  ", " ");
             file = file.trim();
-            textArray = file.split("[ \n\r\t]");
+            textArray = file.split("[ ]");
             countWords(textArray);
         }
     }
@@ -57,5 +59,6 @@ class arrayFromText {
             System.out.printf("%s -> %d; ",s,count);
         }
         System.out.println();
+        System.out.println(set);
     }
 }

@@ -1,14 +1,16 @@
 package ru.kimdo;
 
+/**
+ * @author Pavel Petrikovskiy
+ * @version 19.06.2017
+ */
+
 public class Main {
-
-
     public static void main(String[] args) {
         MyClass treadCompetition = new MyClass();
         treadCompetition.simpleCount();
         treadCompetition.treadCount();
     }
-
 }
 class MyClass {
     private final int size = 10000000;

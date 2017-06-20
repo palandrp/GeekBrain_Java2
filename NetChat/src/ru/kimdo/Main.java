@@ -65,7 +65,7 @@ public class Main extends JFrame implements ActionListener {
         add(BorderLayout.SOUTH, bp);
         setVisible(true);
         try {
-            pw = new PrintWriter(new FileWriter("log.txt"));
+            pw = new PrintWriter(new FileWriter("log.txt",true));
         } catch (IOException e) {
             dialogue.append("SYSTEM: Не удалось создать/открыть лог-файл!");
         }

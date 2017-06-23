@@ -1,5 +1,11 @@
 package ru.kimdo;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
@@ -13,14 +19,16 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        new MyLittleServer().go();
+        Thread t1 = new Thread(new MyLittleServer());
+        t1.start();
+        new MyLittleClient();
     }
 }
-class MyLittleServer {
-    private ServerSocket server = null; // Создаём пустую ссылку на сервер
-    private Socket s = null;            // Создаём пустую ссылку на сокет
+class MyLittleServer implements Runnable {
+    public void run(){
+        ServerSocket server = null; // Создаём пустую ссылку на сервер
+        Socket s = null;            // Создаём пустую ссылку на сокет
 
-    void go() {
         try {
             server = new ServerSocket(8189); // Запускаем сервер на прослушивание порта 8189
             System.out.println("Сервер запущен. Ожидание клиентов...");
@@ -66,7 +74,8 @@ class ClientHandler implements Runnable {
                 String w = in.nextLine(); // читаем его 
                 System.out.println(name + ": " + w); // печатаем это сообщение в консоль
                 out.println("echo: " + w); // и отсылаем обратно с добавлением фразы "echo: "
-                out.flush(); // если клиент прислал "end", выходим из бесконечного цикла
+                out.flush();
+                // если клиент прислал "end", выходим из бесконечного цикла
                 if(w.equalsIgnoreCase("END"))
                     break;
             }
@@ -77,5 +86,92 @@ class ClientHandler implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+}
+class MyLittleClient extends JFrame {
+    private JTextField jtf;
+    private JTextArea jta;
+    private Socket sock;
+    private Scanner in;
+    private PrintWriter out;
+
+    MyLittleClient() {
+        final String SERVER_ADDR = "localhost";
+        final int SERVER_PORT = 8189;
+
+        try {
+            sock = new Socket(SERVER_ADDR, SERVER_PORT);
+            in = new Scanner(sock.getInputStream());
+            out = new PrintWriter(sock.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        setBounds(600, 300, 500, 500);
+        setTitle("Client");
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        jta = new JTextArea();
+        jta.setEditable(false);
+        jta.setLineWrap(true);
+        JScrollPane jsp = new JScrollPane(jta);
+        add(jsp, BorderLayout.CENTER);
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        add(bottomPanel, BorderLayout.SOUTH);
+        JButton jbSend = new JButton("SEND");
+        bottomPanel.add(jbSend, BorderLayout.EAST);
+        jtf = new JTextField();
+        bottomPanel.add(jtf, BorderLayout.CENTER);
+        jbSend.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!jtf.getText().trim().isEmpty()) {
+                    sendMsg();
+                    jtf.grabFocus();
+                }
+            }
+        });
+        jtf.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sendMsg();
+            }
+        });
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    while (true) {
+                        if (in.hasNext()) {
+                            String w = in.nextLine();
+                            if (w.equalsIgnoreCase("end session")) break;
+                            jta.append(w);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
+                try {
+                    out.println("end");
+                    out.flush();
+                    sock.close();
+                    out.close();
+                    in.close();
+                } catch (IOException exc) {
+                    exc.printStackTrace();
+                }
+            }
+        });
+        setVisible(true);
+    }
+    private void sendMsg() {
+        String a = jtf.getText();
+        out.println(a);
+        out.flush();
+        jtf.setText("");
     }
 }

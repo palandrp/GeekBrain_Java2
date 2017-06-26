@@ -17,7 +17,7 @@ public class SQLite {
 
     static final String DRIVER_NAME = "org.sqlite.JDBC";
     static Connection connect = null;
-    static String nameDB = "sqlite.db";
+    static String nameDB = "Forfan.db";
     static String tableDB = "COMPANY";
 
     public static void main(String[] args) {

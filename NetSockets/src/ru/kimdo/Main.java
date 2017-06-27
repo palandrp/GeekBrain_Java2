@@ -140,9 +140,4 @@ class MyLittleClient {
             exc.printStackTrace();
         }
     }
-    private void sendMsg() {
-        String a = c_input.nextLine();
-        out.println("Client:" + a);
-        out.flush();
-    }
 }

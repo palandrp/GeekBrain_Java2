@@ -1,3 +1,5 @@
+package ru.kimdo;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
@@ -21,8 +23,8 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        new MyLittleServer();
-//        new MyLittleClient();
+//        new MyLittleServer().run();
+        new MyLittleClient();
     }
 }
 class MyLittleServer implements Runnable {
@@ -72,6 +74,7 @@ class ClientHandler implements Runnable {
             in = new Scanner(s.getInputStream());
             CLIENTS_COUNT++;
             name = "Клиент #" + CLIENTS_COUNT;
+            System.out.println("Клиент хендлер \"" + name + "\" готов к приёму");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -81,15 +84,16 @@ class ClientHandler implements Runnable {
             if(in.hasNext()) {
                 String w = in.nextLine();
                 System.out.println(name + ": " + w);
-                out.println("Server: " + s_input.nextLine());
-                out.flush();
                 if(w.equalsIgnoreCase("END"))
                     break;
             }
+            out.println("Server: " + s_input.nextLine());
+            out.flush();
         }
         try {
             System.out.println("Клиент отключился");
             s.close();
+            s_input.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -116,8 +120,11 @@ class MyLittleClient {
             while (true) {
                 if (in.hasNext()) {
                     String w = in.nextLine();
+                    System.out.println(w);
                     if (w.equalsIgnoreCase("end session")) break;
                 }
+                out.println("Client: " + c_input.nextLine());
+                out.flush();
             }
         } catch (Exception e) {
             e.printStackTrace();

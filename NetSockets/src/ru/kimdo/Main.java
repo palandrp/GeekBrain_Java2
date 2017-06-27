@@ -36,20 +36,25 @@ public class Main {
 }
 class MyLittleServer implements Runnable {
     public void run(){
-        ServerSocket server = null; // Создаём пустую ссылку на сервер
-        Socket s = null;            // Создаём пустую ссылку на сокет
+        ServerSocket server = null;
+        Socket s = null;
+        Thread client = null;
 
         try {
-            server = new ServerSocket(8189); // Запускаем сервер на прослушивание порта 8189
+            server = new ServerSocket(8189);
             System.out.println("Сервер запущен. Ожидание клиентов...");
-            while (true) {
-                s = server.accept(); // Как только клиент подключится, создаем сокет (соединение)
+                s = server.accept();
                 System.out.println("Клиент подключился");
-                new Thread(new ClientHandler(s)).start(); // В отдельном потоке запускаем обработчик этого клиента
-            } // и переходим в режим ожидания следующего клиента (в начало цикла while)
+                client = new Thread(new ClientHandler(s));
+                client.start();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            try {
+                client.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             try {
                 server.close();
                 System.out.println("Server closed");
@@ -69,23 +74,22 @@ class ClientHandler implements Runnable {
 
     ClientHandler(Socket s) {
         try {
-            this.s = s; // при создании обработчика, даем ему ссылку на обрабатываемое соединение (сокет) 
-            out = new PrintWriter(s.getOutputStream()); // PrintWriter служит для отсылки сообщений клиенту 
-            in = new Scanner(s.getInputStream()); // Scanner предназначен для чтения сообщений от клиента 
-            CLIENTS_COUNT++;                      // Подсчитываем количество клиентов 
+            this.s = s;
+            out = new PrintWriter(s.getOutputStream());
+            in = new Scanner(s.getInputStream());
+            CLIENTS_COUNT++;
             name = "Клиент #" + CLIENTS_COUNT;
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    public void run() { // метод обмена сообщениями 
-        while (true) { // запускаем бесконечный цикл
-            if(in.hasNext()) { // если от клиента пришло сообщение
-                String w = in.nextLine(); // читаем его 
-                System.out.println(name + ": " + w); // печатаем это сообщение в консоль
-                out.println("echo: " + w); // и отсылаем обратно с добавлением фразы "echo: "
+    public void run() {
+        while (true) {
+            if(in.hasNext()) {
+                String w = in.nextLine();
+                System.out.println(name + ": " + w);
+                out.println("echo: " + w);
                 out.flush();
-                // если клиент прислал "end", выходим из бесконечного цикла
                 if(w.equalsIgnoreCase("END"))
                     break;
             }

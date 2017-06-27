@@ -1,11 +1,3 @@
-package ru.kimdo;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
@@ -29,9 +21,8 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        Thread t1 = new Thread(new MyLittleServer());
-        t1.start();
-        new MyLittleClient();
+        new MyLittleServer();
+//        new MyLittleClient();
     }
 }
 class MyLittleServer implements Runnable {
@@ -68,11 +59,13 @@ class MyLittleServer implements Runnable {
 class ClientHandler implements Runnable {
     private Socket s;
     private PrintWriter out;
-    private Scanner in;
+    private Scanner in, s_input;
     private static int CLIENTS_COUNT = 0;
     private String name;
 
     ClientHandler(Socket s) {
+        s_input = new Scanner(System.in);
+
         try {
             this.s = s;
             out = new PrintWriter(s.getOutputStream());
@@ -88,7 +81,7 @@ class ClientHandler implements Runnable {
             if(in.hasNext()) {
                 String w = in.nextLine();
                 System.out.println(name + ": " + w);
-                out.println("echo: " + w);
+                out.println("Server: " + s_input.nextLine());
                 out.flush();
                 if(w.equalsIgnoreCase("END"))
                     break;
@@ -96,22 +89,21 @@ class ClientHandler implements Runnable {
         }
         try {
             System.out.println("Клиент отключился");
-            s.close(); // закрываем сокет
+            s.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 }
-class MyLittleClient extends JFrame {
-    private JTextField jtf;
-    private JTextArea jta;
+class MyLittleClient {
     private Socket sock;
-    private Scanner in;
+    private Scanner in, c_input;
     private PrintWriter out;
 
     MyLittleClient() {
         final String SERVER_ADDR = "localhost";
         final int SERVER_PORT = 8189;
+        c_input = new Scanner(System.in);
 
         try {
             sock = new Socket(SERVER_ADDR, SERVER_PORT);
@@ -120,72 +112,30 @@ class MyLittleClient extends JFrame {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        setBounds(600, 300, 500, 500);
-        setTitle("Client");
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        jta = new JTextArea();
-        jta.setEditable(false);
-        jta.setLineWrap(true);
-        JScrollPane jsp = new JScrollPane(jta);
-        add(jsp, BorderLayout.CENTER);
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-        add(bottomPanel, BorderLayout.SOUTH);
-        JButton jbSend = new JButton("SEND");
-        bottomPanel.add(jbSend, BorderLayout.EAST);
-        jtf = new JTextField();
-        bottomPanel.add(jtf, BorderLayout.CENTER);
-        jbSend.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!jtf.getText().trim().isEmpty()) {
-                    sendMsg();
-                    jtf.grabFocus();
+        try {
+            while (true) {
+                if (in.hasNext()) {
+                    String w = in.nextLine();
+                    if (w.equalsIgnoreCase("end session")) break;
                 }
             }
-        });
-        jtf.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendMsg();
-            }
-        });
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    while (true) {
-                        if (in.hasNext()) {
-                            String w = in.nextLine();
-                            if (w.equalsIgnoreCase("end session")) break;
-                            jta.append(w);
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                super.windowClosing(e);
-                try {
-                    out.println("end");
-                    out.flush();
-                    sock.close();
-                    out.close();
-                    in.close();
-                } catch (IOException exc) {
-                    exc.printStackTrace();
-                }
-            }
-        });
-        setVisible(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            out.println("end");
+            out.flush();
+            sock.close();
+            out.close();
+            in.close();
+            c_input.close();
+        } catch (IOException exc) {
+            exc.printStackTrace();
+        }
     }
     private void sendMsg() {
-        String a = jtf.getText();
-        out.println(a);
+        String a = c_input.nextLine();
+        out.println("Client:" + a);
         out.flush();
-        jtf.setText("");
     }
 }

@@ -90,8 +90,11 @@ class ClientHandler implements Runnable {
                 try {
                     while (true) {
                         System.out.println(name + ": " + in.readLine());
-                        if (in.readLine().equalsIgnoreCase("END"))
+                        if (in.readLine().equalsIgnoreCase("END")) {
+                            out.println("end session");
+                            out.flush();
                             break;
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

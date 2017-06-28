@@ -87,11 +87,13 @@ class ClientHandler implements Runnable {
         Thread output = new Thread(new Runnable() {
             @Override
             public void run() {
+                String message = "";
                 try {
                     while (true) {
-                        System.out.println(name + ": " + in.readLine());
-                        if (in.readLine().equalsIgnoreCase("END")) {
-                            out.println("end session");
+                        message = name + ": " + in.readLine();
+                        System.out.println(message);
+                        if (message.equalsIgnoreCase(name + ": END")) {
+                            out.println("Server: end session");
                             out.flush();
                             break;
                         }
@@ -135,10 +137,12 @@ class MyLittleClient {
         Thread output = new Thread(new Runnable() {
             @Override
             public void run() {
+                String message = "";
                 try {
                     while (true) {
-                        System.out.println(in.readLine());
-                        if (in.readLine().equalsIgnoreCase("end session"))
+                        message = in.readLine();
+                        System.out.println(message);
+                        if (message.equalsIgnoreCase("Server: end session"))
                             break;
                     }
                 } catch (IOException e) {

@@ -81,12 +81,13 @@ class ClientHandler implements Runnable {
     }
     public void run() {
         while (true) {
+            System.out.println("##1");
             if(in.hasNext()) {
-                String w = in.nextLine();
-                System.out.println(name + ": " + w);
-                if(w.equalsIgnoreCase("END"))
+                System.out.println(name + ": " + in.nextLine());
+                if(in.nextLine().equalsIgnoreCase("END"))
                     break;
             }
+            System.out.println("##2");
             out.println("Server: " + s_input.nextLine());
             out.flush();
         }
@@ -101,13 +102,13 @@ class ClientHandler implements Runnable {
 }
 class MyLittleClient {
     private Socket sock;
-    private Scanner in, c_input;
+    private Scanner in;
     private PrintWriter out;
 
     MyLittleClient() {
         final String SERVER_ADDR = "localhost";
         final int SERVER_PORT = 8189;
-        c_input = new Scanner(System.in);
+        Scanner c_input = new Scanner(System.in);
 
         try {
             sock = new Socket(SERVER_ADDR, SERVER_PORT);
@@ -118,11 +119,13 @@ class MyLittleClient {
         }
         try {
             while (true) {
-                if (in.hasNext()) {
-                    String w = in.nextLine();
-                    System.out.println(w);
-                    if (w.equalsIgnoreCase("end session")) break;
-                }
+//                System.out.println("##1");
+//                if (in.hasNext()) {
+//                    System.out.println(in.nextLine());
+//                    if (in.nextLine().equalsIgnoreCase("end session"))
+//                        break;
+//                }
+                System.out.println("##2");
                 out.println("Client: " + c_input.nextLine());
                 out.flush();
             }

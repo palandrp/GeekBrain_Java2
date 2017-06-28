@@ -1,6 +1,8 @@
 package ru.kimdo;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -61,7 +63,8 @@ class MyLittleServer implements Runnable {
 class ClientHandler implements Runnable {
     private Socket s;
     private PrintWriter out;
-    private Scanner in, s_input;
+    private BufferedReader in;
+    private Scanner s_input;
     private static int CLIENTS_COUNT = 0;
     private String name;
 
@@ -71,7 +74,8 @@ class ClientHandler implements Runnable {
         try {
             this.s = s;
             out = new PrintWriter(s.getOutputStream());
-            in = new Scanner(s.getInputStream());
+            in = new BufferedReader(
+                    new InputStreamReader(s.getInputStream()));
             CLIENTS_COUNT++;
             name = "Клиент #" + CLIENTS_COUNT;
             System.out.println("Клиент хендлер \"" + name + "\" готов к приёму");
@@ -80,14 +84,21 @@ class ClientHandler implements Runnable {
         }
     }
     public void run() {
-        while (true) {
-            System.out.println("##1");
-            if(in.hasNext()) {
-                System.out.println(name + ": " + in.nextLine());
-                if(in.nextLine().equalsIgnoreCase("END"))
-                    break;
+        Thread output = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    while (true) {
+                        System.out.println(name + ": " + in.readLine());
+                        if (in.readLine().equalsIgnoreCase("END"))
+                            break;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-            System.out.println("##2");
+        }); output.start();
+        while (output.isAlive()) {
             out.println("Server: " + s_input.nextLine());
             out.flush();
         }
@@ -102,7 +113,7 @@ class ClientHandler implements Runnable {
 }
 class MyLittleClient {
     private Socket sock;
-    private Scanner in;
+    private BufferedReader in;
     private PrintWriter out;
 
     MyLittleClient() {
@@ -112,21 +123,29 @@ class MyLittleClient {
 
         try {
             sock = new Socket(SERVER_ADDR, SERVER_PORT);
-            in = new Scanner(sock.getInputStream());
+            in = new BufferedReader(
+                    new InputStreamReader(sock.getInputStream()));
             out = new PrintWriter(sock.getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Thread output = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    while (true) {
+                        System.out.println(in.readLine());
+                        if (in.readLine().equalsIgnoreCase("end session"))
+                            break;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }); output.start();
         try {
-            while (true) {
-//                System.out.println("##1");
-//                if (in.hasNext()) {
-//                    System.out.println(in.nextLine());
-//                    if (in.nextLine().equalsIgnoreCase("end session"))
-//                        break;
-//                }
-                System.out.println("##2");
-                out.println("Client: " + c_input.nextLine());
+            while (output.isAlive()) {
+                out.println(c_input.nextLine());
                 out.flush();
             }
         } catch (Exception e) {

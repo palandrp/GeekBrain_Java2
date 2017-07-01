@@ -14,7 +14,7 @@ import java.sql.*;
 
 /**
  * @author Pavel Petrikovskiy
- * @version 17.06.17
+ * @version 30.06.17
  */
 
 public class Main extends JFrame implements ActionListener {
@@ -85,17 +85,17 @@ public class Main extends JFrame implements ActionListener {
         message.requestFocusInWindow();
     }
 }
-class MyLittleServer implements Runnable {
+class MyLittleServer implements Runnable, IConstants {
     public void run(){
         ServerSocket server = null;
         Socket s = null;
         Thread client = null;
 
         try {
-            server = new ServerSocket(8189);
-            System.out.println("Сервер запущен. Ожидание клиентов...");
+            server = new ServerSocket(SERVER_PORT);
+            System.out.println(SERVER_START);
             s = server.accept();
-            System.out.println("Клиент подключился");
+            System.out.println(CLIENT_JOINED);
             client = new Thread(new ClientHandler(s));
             client.start();
         } catch (IOException e) {
@@ -108,7 +108,7 @@ class MyLittleServer implements Runnable {
             }
             try {
                 server.close();
-                System.out.println("Server closed");
+                System.out.println(SERVER_STOP);
                 s.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -116,7 +116,7 @@ class MyLittleServer implements Runnable {
         }
     }
 }
-class ClientHandler implements Runnable {
+class ClientHandler implements Runnable, IConstants {
     private Socket s;
     private PrintWriter out;
     private BufferedReader in;
@@ -148,8 +148,8 @@ class ClientHandler implements Runnable {
                     while (true) {
                         message = name + ": " + in.readLine();
                         System.out.println(message);
-                        if (message.equalsIgnoreCase(name + ": END")) {
-                            out.println("Server: end session");
+                        if (message.equalsIgnoreCase(EXIT_COMMAND)) {
+                            out.println(SERVER_STOP);
                             out.flush();
                             break;
                         }
@@ -164,7 +164,7 @@ class ClientHandler implements Runnable {
             out.flush();
         }
         try {
-            System.out.println("Клиент отключился");
+            System.out.println(CLIENT_DISCONNECTED);
             s.close();
             s_input.close();
         } catch (IOException e) {
@@ -172,14 +172,12 @@ class ClientHandler implements Runnable {
         }
     }
 }
-class MyLittleClient {
+class MyLittleClient implements IConstants {
     private Socket sock;
     private BufferedReader in;
     private PrintWriter out;
 
     MyLittleClient() {
-        final String SERVER_ADDR = "localhost";
-        final int SERVER_PORT = 8189;
         Scanner c_input = new Scanner(System.in);
 
         try {
@@ -198,7 +196,7 @@ class MyLittleClient {
                     while (true) {
                         message = in.readLine();
                         System.out.println(message);
-                        if (message.equalsIgnoreCase("Server: end session"))
+                        if (message.equalsIgnoreCase(EXIT_COMMAND))
                             break;
                     }
                 } catch (IOException e) {
@@ -215,7 +213,7 @@ class MyLittleClient {
             e.printStackTrace();
         }
         try {
-            out.println("end");
+            out.println(EXIT_COMMAND);
             out.flush();
             sock.close();
             out.close();
@@ -226,15 +224,11 @@ class MyLittleClient {
         }
     }
 }
-class SQLite {
-
-    static final String DRIVER_NAME = "org.sqlite.JDBC";
+class SQLite implements IConstants {
     static Connection connect = null;
-    static String nameDB = "Forfan.db";
-    static String tableDB = "COMPANY";
 
     public static void main(String[] args) {
-        openDB(nameDB);
+        openDB(SQLITE_DB);
         createTable(tableDB);
         insertRecords(tableDB);
         selectRecords(tableDB);
@@ -252,15 +246,15 @@ class SQLite {
         }
     }
 
-    static void openDB(String nameDB) {
+    static void openDB(String SQLITE_DB) {
         try {
             Class.forName(DRIVER_NAME);
-            connect = DriverManager.getConnection("jdbc:sqlite:" + nameDB);
+            connect = DriverManager.getConnection("jdbc:sqlite:" + IConstants.SQLITE_DB);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);
         }
-        System.out.println("Opening database " + nameDB + " successfully");
+        System.out.println("Opening database " + IConstants.SQLITE_DB + " successfully");
     }
 
     static void createTable(String table) {
@@ -278,7 +272,7 @@ class SQLite {
             e.printStackTrace();
             System.exit(-1);
         }
-        System.out.println("Create table in database " + nameDB + " successfully");
+        System.out.println("Create table in database " + SQLITE_DB + " successfully");
     }
 
     static void insertRecords(String table) {
@@ -304,7 +298,7 @@ class SQLite {
             e.printStackTrace();
             System.exit(-1);
         }
-        System.out.println("Records in database " + nameDB + " added successfully");
+        System.out.println("Records in database " + SQLITE_DB + " added successfully");
     }
 
     static void selectRecords(String table) {
@@ -355,4 +349,24 @@ class SQLite {
             System.exit(-1);
         }
     }
+}
+interface IConstants {
+    final String DRIVER_NAME = "org.sqlite.JDBC";
+    final String SQLITE_DB = "jdbc:sqlite:chat.db";
+    final String SERVER_ADDR = "localhost"; // server net name or "127.0.0.1"
+    final int SERVER_PORT = 2048; // servet port
+    final String SERVER_START = "Server is started...";
+    final String SERVER_STOP = "Server stopped.";
+    final String CLIENT_JOINED = " client joined.";
+    final String CLIENT_DISCONNECTED = " disconnected.";
+    final String CLIENT_PROMPT = "$ "; // client prompt
+    final String LOGIN_PROMPT = "Login: ";
+    final String PASSWD_PROMPT = "Passwd: ";
+    final String AUTH_SIGN = "auth";
+    final String AUTH_FAIL = "Authentication failure.";
+    final String SQL_SELECT = "SELECT * FROM users WHERE login = '?'";
+    final String PASSWD_COL = "passwd";
+    final String CONNECT_TO_SERVER = "Connection to server established.";
+    final String CONNECT_CLOSED = "Connection closed.";
+    final String EXIT_COMMAND = "exit"; // command for exit
 }

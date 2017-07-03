@@ -11,7 +11,22 @@ import java.net.Socket;
  * @version 03.07.17
  */
 
-public class GUIClient extends JFrame implements ActionListener, IConstantsClient {
+public class GUIClient extends JFrame implements ActionListener {
+    private final String LOGIN_PROMPT = "Login: ";
+    private final String PASSWD_PROMPT = "Passwd: ";
+    private final String AUTH_SIGN = "auth";
+    private final String AUTH_FAIL = "Authentication failure.";
+    private final String EXIT_COMMAND = "exit"; // command for exit
+    private final String TITLE_OF_PROGRAM = "Network chat";
+    private final int START_LOCATION = 350;
+    private final int WINDOW_WIDTH = 350;
+    private final int WINDOW_HEIGHT = 450;
+    private final String NAME_LOG_FILE = "log.txt";
+    private final String NO_LOG_FILE = "SYSTEM: Не удалось создать/открыть лог-файл!";
+    private final String TITLE_BTN_ENTER = "Enter";
+
+    private String SERVER_ADDR = "localhost"; // server net name or "127.0.0.1"
+    private int SERVER_PORT = 2048; // servet port
 
     private JTextArea dialogue; // area for dialog
     private JTextField command; // field for entering commands
@@ -59,9 +74,14 @@ public class GUIClient extends JFrame implements ActionListener, IConstantsClien
         bp.add(enter);
         add(BorderLayout.CENTER, scrollBar);
         add(BorderLayout.SOUTH, bp);
-        setVisible(true);
-        // connect to server
         Connect();
+        LoginOn formLogin = new LoginOn();
+        if (formLogin.getStatus())
+            setVisible(true);
+        else
+            System.exit(-1);
+        formLogin.dispose();
+        // connect to server
     }
 
     private void Connect() {
@@ -106,5 +126,70 @@ public class GUIClient extends JFrame implements ActionListener, IConstantsClien
             command.setText("");
         }
         command.requestFocusInWindow();
+    }
+
+    public final class LoginOn extends JFrame implements ActionListener {
+        private final int WINDOW_HEIGHT = 98;
+
+        private boolean status;
+        private JTextField fLogin;
+        private JTextField fPass;
+        String login;
+        String pass;
+        String message;
+
+        LoginOn() {
+            setTitle(TITLE_OF_PROGRAM);
+            setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            setBounds(START_LOCATION, START_LOCATION, WINDOW_WIDTH, WINDOW_HEIGHT);
+            setResizable(false);
+            JPanel bp_login = new JPanel();
+            JPanel bp_pass = new JPanel();
+            JPanel bp_btn = new JPanel();
+            bp_login.setLayout(new BoxLayout(bp_login, BoxLayout.X_AXIS));
+            bp_pass.setLayout(new BoxLayout(bp_pass, BoxLayout.X_AXIS));
+            bp_btn.setLayout(new BoxLayout(bp_btn, BoxLayout.X_AXIS));
+            fLogin = new JTextField(LOGIN_PROMPT);
+            fPass = new JTextField(PASSWD_PROMPT);
+            JButton enter = new JButton(TITLE_BTN_ENTER);
+            fLogin.addActionListener(this);
+            fPass.addActionListener(this);
+            enter.addActionListener(this);
+            bp_login.add(fLogin);
+            bp_pass.add(fPass);
+            bp_btn.add(enter);
+            add(BorderLayout.NORTH, bp_login);
+            add(BorderLayout.CENTER, bp_pass);
+            add(BorderLayout.SOUTH, bp_btn);
+            setVisible(true);
+            try {
+                message = reader.readLine();
+                if (message.equals(AUTH_FAIL))
+                    status = false;
+                else
+                    status = true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        /**
+         * getLoginAndPassword: get login and password
+         */
+        private String getLoginAndPassword() {
+            login = fLogin.getText();
+            pass = fPass.getText();
+            return AUTH_SIGN + " " + login + " " + pass;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent event) {
+            writer.println(getLoginAndPassword()); // send authentication data
+            writer.flush();
+        }
+
+        boolean getStatus() {
+            return status;
+        }
     }
 }

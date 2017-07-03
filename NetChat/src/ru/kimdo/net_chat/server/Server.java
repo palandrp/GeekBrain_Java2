@@ -17,7 +17,20 @@ import java.util.Scanner;
  * @author Pavel Petrikovskiy
  * @version 03.07.17
  */
-class Server implements IConstantsServer {
+class Server {
+    private final String DRIVER_NAME = "org.sqlite.JDBC";
+    private final String SQLITE_DB = "jdbc:sqlite:chat.db";
+    private final String SERVER_START = "Server is started...";
+    private final String SERVER_STOP = "Server stopped.";
+    private final String CLIENT_JOINED = " client joined.";
+    private final String CLIENT_DISCONNECTED = " disconnected.";
+    private final String AUTH_SIGN = "auth";
+    private final String AUTH_FAIL = "Authentication failure.";
+    private final String SQL_SELECT = "SELECT * FROM users WHERE login = '?'";
+    private final String PASSWD_COL = "passwd";
+    private final String EXIT_COMMAND = "exit"; // command for exit
+
+    private int SERVER_PORT = 2048; // servet port
 
     private ServerSocket server;
     private List<ClientHandler> clients;

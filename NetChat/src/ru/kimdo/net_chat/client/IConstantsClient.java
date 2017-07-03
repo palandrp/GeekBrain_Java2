@@ -1,4 +1,4 @@
-package ru.kimdo;
+package ru.kimdo.net_chat.client;
 
 /**
  * @author Pavel Petrikovskiy
@@ -23,4 +23,11 @@ interface IConstants {
     String CONNECT_TO_SERVER = "Connection to server established.";
     String CONNECT_CLOSED = "Connection closed.";
     String EXIT_COMMAND = "exit"; // command for exit
+    String TITLE_OF_PROGRAM = "Network chat";
+    int START_LOCATION = 200;
+    int WINDOW_WIDTH = 350;
+    int WINDOW_HEIGHT = 450;
+    String NAME_LOG_FILE = "log.txt";
+    String NO_LOG_FILE = "SYSTEM: Не удалось создать/открыть лог-файл!";
+    String BUTTON_ENTER = "Enter";
 }

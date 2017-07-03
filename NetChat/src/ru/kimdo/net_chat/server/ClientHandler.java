@@ -1,4 +1,4 @@
-package ru.kimdo;
+package ru.kimdo.net_chat.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.util.Scanner;
  * @author Pavel Petrikovskiy
  * @version 03.07.17
  */
-class ClientHandler implements Runnable, IConstants {
+class ClientHandler implements Runnable, IConstantsServer {
     private Socket s;
     private PrintWriter out;
     private BufferedReader in;

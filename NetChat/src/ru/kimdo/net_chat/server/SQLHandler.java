@@ -1,4 +1,4 @@
-package ru.kimdo;
+package ru.kimdo.net_chat.server;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,37 +9,18 @@ import java.sql.Statement;
  * @author Pavel Petrikovskiy
  * @version 03.07.17
  */
-class SQLHandler implements IConstants {
+class SQLHandler implements IConstantsServer {
     static Connection connect = null;
-
-    public static void main(String[] args) {
-        openDB(SQLITE_DB);
-        createTable(tableDB);
-        insertRecords(tableDB);
-        selectRecords(tableDB);
-
-        updateRecord(tableDB);
-        selectRecords(tableDB);
-
-        deleteRecord(tableDB);
-        selectRecords(tableDB);
-        try {
-            connect.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(-1);
-        }
-    }
 
     static void openDB(String SQLITE_DB) {
         try {
             Class.forName(DRIVER_NAME);
-            connect = DriverManager.getConnection("jdbc:sqlite:" + IConstants.SQLITE_DB);
+            connect = DriverManager.getConnection("jdbc:sqlite:" + IConstantsServer.SQLITE_DB);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);
         }
-        System.out.println("Opening database " + IConstants.SQLITE_DB + " successfully");
+        System.out.println("Opening database " + IConstantsServer.SQLITE_DB + " successfully");
     }
 
     static void createTable(String table) {

@@ -4,7 +4,7 @@ package ru.kimdo.net_chat.client;
  * @author Pavel Petrikovskiy
  * @version 03.07.17
  */
-interface IConstants {
+interface IConstantsClient {
     String DRIVER_NAME = "org.sqlite.JDBC";
     String SQLITE_DB = "jdbc:sqlite:chat.db";
     String SERVER_ADDR = "localhost"; // server net name or "127.0.0.1"

@@ -1,4 +1,4 @@
-package ru.kimdo;
+package ru.kimdo.net_chat.client;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,7 +10,7 @@ import java.io.*;
  * @version 03.07.17
  */
 
-public class MakeWindow extends JFrame implements ActionListener, IConstants {
+public class MakeWindow extends JFrame implements ActionListener, IConstantsClient {
     private JTextArea dialogue;
     private JTextField message;
     private PrintWriter pw;

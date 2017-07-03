@@ -1,4 +1,4 @@
-package ru.kimdo;
+package ru.kimdo.net_chat.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -8,7 +8,7 @@ import java.net.Socket;
  * @author Pavel Petrikovskiy
  * @version 03.07.17
  */
-class Server implements Runnable, IConstants {
+class Server implements Runnable, IConstantsServer {
     public void run(){
         ServerSocket server = null;
         Socket s = null;

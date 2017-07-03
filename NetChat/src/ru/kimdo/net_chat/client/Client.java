@@ -1,7 +1,6 @@
 package ru.kimdo.net_chat.client;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -12,58 +11,65 @@ import java.util.Scanner;
  * @version 03.07.17
  */
 class Client implements IConstantsClient {
-    private Socket sock;
-    private BufferedReader in;
-    private PrintWriter out;
 
-    Client(final MakeWindow window) {
-        Scanner c_input = new Scanner(window.getMessage());
-        String message = "";
+    private BufferedReader reader;
+    private Scanner scanner = new Scanner(System.in); // for keyboard input
+    private String message;
 
+    public static void main(String[] args) {
+        new Client();
+    }
+
+    private Client() {
+        Socket socket;
+        PrintWriter writer;
+
+        System.out.println(CONNECT_TO_SERVER);
         try {
-            sock = new Socket(SERVER_ADDR, SERVER_PORT);
-            in = new BufferedReader(
-                    new InputStreamReader(sock.getInputStream()));
-            out = new PrintWriter(sock.getOutputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
+            socket = new Socket(SERVER_ADDR, SERVER_PORT);
+            writer = new PrintWriter(socket.getOutputStream());
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            writer.println(getLoginAndPassword()); // send authentication data
+            writer.flush();
+            new Thread(new ServerListener()).start();
+            do {
+                message = scanner.nextLine();
+                writer.println(message);
+                writer.flush();
+            } while (!message.equals(EXIT_COMMAND));
+            socket.close();
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
-        Thread output = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String message = "";
-                try {
-                    while (true) {
-                        message = in.readLine();
-                        window.appendDialogue(message);
-                        if (message.equalsIgnoreCase(EXIT_COMMAND))
-                            break;
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+        System.out.println(CONNECT_CLOSED);
+    }
+
+    /**
+     * getLoginAndPassword: get login and password
+     */
+    String getLoginAndPassword() {
+        System.out.print(LOGIN_PROMPT);
+        String login = scanner.nextLine();
+        System.out.print(PASSWD_PROMPT);
+        return AUTH_SIGN + " " + login + " " + scanner.nextLine();
+    }
+
+    /**
+     * ServerListener: get messages from Server
+     */
+    class ServerListener implements Runnable {
+        @Override
+        public void run() {
+            try {
+                while ((message = reader.readLine()) != null) {
+                    System.out.print(message.equals("\0")?
+                            CLIENT_PROMPT : message + "\n");
+                    if (message.equals(AUTH_FAIL))
+                        System.exit(-1); // terminate client
                 }
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
             }
-        }); output.start();
-        try {
-            while (output.isAlive()) {
-                message = c_input.next();
-                if (message.trim().length() > 0 && message != null) {
-                    out.println(message + "\n");
-                    out.flush();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            out.println(EXIT_COMMAND);
-            out.flush();
-            sock.close();
-            out.close();
-            in.close();
-            c_input.close();
-        } catch (IOException exc) {
-            exc.printStackTrace();
         }
     }
 }

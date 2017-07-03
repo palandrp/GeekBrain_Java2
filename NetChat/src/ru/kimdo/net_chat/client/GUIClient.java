@@ -16,20 +16,18 @@ public class GUIClient extends JFrame implements ActionListener {
     private final String PASSWD_PROMPT = "Passwd: ";
     private final String AUTH_SIGN = "auth";
     private final String AUTH_FAIL = "Authentication failure.";
-    private final String EXIT_COMMAND = "exit"; // command for exit
+    private final String EXIT_COMMAND = "exit";
     private final String TITLE_OF_PROGRAM = "Network chat";
     private final int START_LOCATION = 350;
     private final int WINDOW_WIDTH = 350;
     private final int WINDOW_HEIGHT = 450;
-    private final String NAME_LOG_FILE = "log.txt";
-    private final String NO_LOG_FILE = "SYSTEM: Не удалось создать/открыть лог-файл!";
     private final String TITLE_BTN_ENTER = "Enter";
 
-    private String SERVER_ADDR = "localhost"; // server net name or "127.0.0.1"
-    private int SERVER_PORT = 2048; // servet port
+    private String SERVER_ADDR = "localhost";
+    private int SERVER_PORT = 2048;
 
-    private JTextArea dialogue; // area for dialog
-    private JTextField command; // field for entering commands
+    private JTextArea dialogue;
+    private JTextField command;
 
     private Socket socket;
     private PrintWriter writer;
@@ -39,10 +37,6 @@ public class GUIClient extends JFrame implements ActionListener {
         new  GUIClient();
     }
 
-    /**
-     * Constructor:
-     * Creating a window and all the necessary elements on it
-     */
     private GUIClient() {
         setTitle(TITLE_OF_PROGRAM);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -57,19 +51,16 @@ public class GUIClient extends JFrame implements ActionListener {
                 } catch (Exception ex) {}
             }
         });
-        // area for dialog
         dialogue = new JTextArea();
         dialogue.setLineWrap(true);
         dialogue.setEditable(false);
         JScrollPane scrollBar = new JScrollPane(dialogue);
-        // panel for connamd field and button
         JPanel bp = new JPanel();
         bp.setLayout(new BoxLayout(bp, BoxLayout.X_AXIS));
         command = new JTextField();
         command.addActionListener(this);
         JButton enter = new JButton(TITLE_BTN_ENTER);
         enter.addActionListener(this);
-        // adding all elements to the window
         bp.add(command);
         bp.add(enter);
         add(BorderLayout.CENTER, scrollBar);
@@ -81,7 +72,6 @@ public class GUIClient extends JFrame implements ActionListener {
         else
             System.exit(-1);
         formLogin.dispose();
-        // connect to server
     }
 
     private void Connect() {
@@ -95,9 +85,6 @@ public class GUIClient extends JFrame implements ActionListener {
         }
     }
 
-    /**
-     * ServerListener: get messages from Server
-     */
     class ServerListener implements Runnable {
         String message;
         @Override
@@ -107,7 +94,7 @@ public class GUIClient extends JFrame implements ActionListener {
                     if (!message.equals("\0"))
                         dialogue.append(message + "\n");
                     if (message.equals(AUTH_FAIL))
-                        System.exit(-1); // terminate client
+                        System.exit(-1);
                 }
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
@@ -115,9 +102,6 @@ public class GUIClient extends JFrame implements ActionListener {
         }
     }
 
-    /**
-     * Listener of events from menu, command field and enter button
-     */
     @Override
     public void actionPerformed(ActionEvent event) {
         if (command.getText().trim().length() > 0) {
@@ -163,19 +147,22 @@ public class GUIClient extends JFrame implements ActionListener {
             add(BorderLayout.SOUTH, bp_btn);
             setVisible(true);
             try {
-                message = reader.readLine();
-                if (message.equals(AUTH_FAIL))
+                if ((message = reader.readLine()).equals(AUTH_FAIL))
                     status = false;
                 else
                     status = true;
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (NullPointerException e2) {
+                try {
+                    socket.close();
+                    System.out.println(AUTH_FAIL);
+                    System.exit(-1);
+                }
+                catch (IOException ex) { ex.printStackTrace(); }
             }
         }
 
-        /**
-         * getLoginAndPassword: get login and password
-         */
         private String getLoginAndPassword() {
             login = fLogin.getText();
             pass = fPass.getText();
@@ -184,7 +171,7 @@ public class GUIClient extends JFrame implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent event) {
-            writer.println(getLoginAndPassword()); // send authentication data
+            writer.println(getLoginAndPassword());
             writer.flush();
         }
 

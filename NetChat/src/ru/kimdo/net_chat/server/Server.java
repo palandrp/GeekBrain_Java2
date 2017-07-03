@@ -1,6 +1,7 @@
 package ru.kimdo.net_chat.server;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
@@ -168,11 +169,13 @@ class Server {
                         }
                     }
                 } while (!message.equalsIgnoreCase(EXIT_COMMAND));
-                clients.remove(this); // delete client from list
-                socket.close();
-                System.out.println(name + CLIENT_DISCONNECTED);
             } catch (Exception ex) {
-                System.out.println(ex.getMessage());
+                System.out.println(name + ": " + ex.getMessage());
+            } finally {
+                clients.remove(this); // delete client from list
+                try { socket.close(); }
+                    catch (IOException e) { e.printStackTrace(); }
+                System.out.println(name + CLIENT_DISCONNECTED);
             }
         }
     }

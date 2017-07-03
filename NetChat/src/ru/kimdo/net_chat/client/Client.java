@@ -16,8 +16,9 @@ class Client implements IConstantsClient {
     private BufferedReader in;
     private PrintWriter out;
 
-    Client() {
-        Scanner c_input = new Scanner(System.in);
+    Client(final MakeWindow window) {
+        Scanner c_input = new Scanner(window.getMessage());
+        String message = "";
 
         try {
             sock = new Socket(SERVER_ADDR, SERVER_PORT);
@@ -34,7 +35,7 @@ class Client implements IConstantsClient {
                 try {
                     while (true) {
                         message = in.readLine();
-                        System.out.println(message);
+                        window.appendDialogue(message);
                         if (message.equalsIgnoreCase(EXIT_COMMAND))
                             break;
                     }
@@ -45,8 +46,11 @@ class Client implements IConstantsClient {
         }); output.start();
         try {
             while (output.isAlive()) {
-                out.println(c_input.nextLine());
-                out.flush();
+                message = c_input.next();
+                if (message.trim().length() > 0 && message != null) {
+                    out.println(message + "\n");
+                    out.flush();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -13,10 +13,11 @@ import java.io.*;
 public class MakeWindow extends JFrame implements ActionListener, IConstantsClient {
     private JTextArea dialogue;
     private JTextField message;
-    private PrintWriter pw;
+    private PrintWriter logWriter;
 
     public static void main(String[] args) {
-        new MakeWindow();
+        MakeWindow window = new MakeWindow();
+        new Client(window);
     }
 
     private MakeWindow() {
@@ -27,7 +28,7 @@ public class MakeWindow extends JFrame implements ActionListener, IConstantsClie
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
-                pw.close();
+                logWriter.close();
             }
         });
         dialogue = new JTextArea();
@@ -45,7 +46,7 @@ public class MakeWindow extends JFrame implements ActionListener, IConstantsClie
         add(BorderLayout.SOUTH, bp);
         setVisible(true);
         try {
-            pw = new PrintWriter(new FileWriter(NAME_LOG_FILE, true));
+            logWriter = new PrintWriter(new FileWriter(NAME_LOG_FILE, true));
         } catch (IOException e) {
             dialogue.append(NO_LOG_FILE);
         }
@@ -53,13 +54,18 @@ public class MakeWindow extends JFrame implements ActionListener, IConstantsClie
     @Override
     public void actionPerformed(ActionEvent e) {
         if (message.getText().trim().length() > 0) {
-            dialogue.append(message.getText() + "\n");
-            dialogue.append("Тестовый запуск!\n");
-            pw.printf("%s\n", message.getText());
-            pw.print("Тестовый запуск!\n");
-            pw.flush();
+            logWriter.printf("%s\n", message.getText());
+            logWriter.flush();
         }
         message.setText("");
         message.requestFocusInWindow();
+    }
+    void appendDialogue(String message) {
+        dialogue.append(message);
+    }
+    String getMessage() {
+        if (message.getText().trim().length() > 0)
+            return message.getText();
+        return "";
     }
 }

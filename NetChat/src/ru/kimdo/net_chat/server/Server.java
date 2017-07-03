@@ -9,6 +9,10 @@ import java.net.Socket;
  * @version 03.07.17
  */
 class Server implements Runnable, IConstantsServer {
+
+    public static void main(String[] args) {
+        new Server().run();
+    }
     public void run(){
         ServerSocket server = null;
         Socket s = null;

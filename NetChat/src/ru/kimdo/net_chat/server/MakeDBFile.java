@@ -44,10 +44,13 @@ class MakeDBFile {
         try {
             stmt.executeUpdate("INSERT INTO " + NAME_TABLE +
                     " (login, passwd) " +
-                    "VALUES ('mike', 'qwerty');");
+                    "VALUES ('Darkforce', 'Ljfd353Q');");
             stmt.executeUpdate("INSERT INTO " + NAME_TABLE +
                     " (login, passwd) " +
-                    "VALUES ('john', '12345');");
+                    "VALUES ('kimdo', 'fsdlj43aLd');");
+            stmt.executeUpdate("INSERT INTO " + NAME_TABLE +
+                    " (login, passwd) " +
+                    "VALUES ('eduard', 'jdlLea&2');");
         } catch (Exception e) { }
 
         // print records

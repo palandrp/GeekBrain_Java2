@@ -12,6 +12,7 @@ import java.net.Socket;
  */
 
 public class GUIClient extends JFrame implements ActionListener {
+
     private final String LOGIN_PROMPT = "Login: ";
     private final String PASSWD_PROMPT = "Passwd: ";
     private final String AUTH_SIGN = "auth";

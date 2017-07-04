@@ -24,8 +24,8 @@ public class GUIClient extends JFrame implements ActionListener {
     private final int WINDOW_HEIGHT = 450;
     private final String TITLE_BTN_ENTER = "Enter";
 
-    private String SERVER_ADDR = "localhost";
-    private int SERVER_PORT = 2048;
+    private String server_addr = "localhost";
+    private int server_port = 2048;
 
     private JTextArea dialogue;
     private JTextField command;
@@ -66,6 +66,8 @@ public class GUIClient extends JFrame implements ActionListener {
         bp.add(enter);
         add(BorderLayout.CENTER, scrollBar);
         add(BorderLayout.SOUTH, bp);
+        FConnect fConnect = new FConnect();
+        fConnect.dispose();
         Connect();
         LoginOn formLogin = new LoginOn();
         if (formLogin.getStatus())
@@ -77,7 +79,7 @@ public class GUIClient extends JFrame implements ActionListener {
 
     private void Connect() {
         try {
-            socket = new Socket(SERVER_ADDR, SERVER_PORT);
+            socket = new Socket(server_addr, server_port);
             writer = new PrintWriter(socket.getOutputStream());
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             new Thread(new ServerListener()).start();
@@ -152,9 +154,7 @@ public class GUIClient extends JFrame implements ActionListener {
                     status = false;
                 else
                     status = true;
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (NullPointerException e2) {
+            } catch (IOException | NullPointerException e) {
                 try {
                     socket.close();
                     System.out.println(AUTH_FAIL);
@@ -178,6 +178,45 @@ public class GUIClient extends JFrame implements ActionListener {
 
         boolean getStatus() {
             return status;
+        }
+    }
+
+    public final class FConnect extends JFrame implements ActionListener {
+        private final int WINDOW_HEIGHT = 98;
+
+        private JTextField fServer;
+        private JTextField fPort;
+
+        FConnect() {
+            setTitle(TITLE_OF_PROGRAM);
+            setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            setBounds(START_LOCATION, START_LOCATION, WINDOW_WIDTH, WINDOW_HEIGHT);
+            setResizable(false);
+            JPanel bp_server = new JPanel();
+            JPanel bp_port = new JPanel();
+            JPanel bp_btn = new JPanel();
+            bp_server.setLayout(new BoxLayout(bp_server, BoxLayout.X_AXIS));
+            bp_port.setLayout(new BoxLayout(bp_port, BoxLayout.X_AXIS));
+            bp_btn.setLayout(new BoxLayout(bp_btn, BoxLayout.X_AXIS));
+            fServer = new JTextField("localhost");
+            fPort = new JTextField("2048");
+            JButton connect_btn = new JButton("Connect");
+            fServer.addActionListener(this);
+            fPort.addActionListener(this);
+            connect_btn.addActionListener(this);
+            bp_server.add(fServer);
+            bp_port.add(fPort);
+            bp_btn.add(connect_btn);
+            add(BorderLayout.NORTH, bp_server);
+            add(BorderLayout.CENTER, bp_port);
+            add(BorderLayout.SOUTH, bp_btn);
+            setVisible(true);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent event) {
+            server_addr = fServer.getText();
+            server_port = Integer.parseInt(fPort.getText());
         }
     }
 }

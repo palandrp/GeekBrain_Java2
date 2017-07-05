@@ -66,8 +66,7 @@ public class GUIClient extends JFrame implements ActionListener {
         bp.add(enter);
         add(BorderLayout.CENTER, scrollBar);
         add(BorderLayout.SOUTH, bp);
-        FConnect fConnect = new FConnect();
-        fConnect.dispose();
+        new FConnect();
         Connect();
         LoginOn formLogin = new LoginOn();
         if (formLogin.getStatus())
@@ -187,6 +186,8 @@ public class GUIClient extends JFrame implements ActionListener {
         private JTextField fServer;
         private JTextField fPort;
 
+        boolean flag = false;
+
         FConnect() {
             setTitle(TITLE_OF_PROGRAM);
             setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -211,12 +212,18 @@ public class GUIClient extends JFrame implements ActionListener {
             add(BorderLayout.CENTER, bp_port);
             add(BorderLayout.SOUTH, bp_btn);
             setVisible(true);
+            while (!flag) {
+                try { GUIClient.this.wait(); }
+                catch (InterruptedException e) {}
+            }
         }
 
         @Override
         public void actionPerformed(ActionEvent event) {
             server_addr = fServer.getText();
             server_port = Integer.parseInt(fPort.getText());
+            flag = true;
+            this.dispose();
         }
     }
 }
